@@ -174,7 +174,7 @@ LRESULT CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
   switch (message) {
     case MN_SELECTITEM:
       {
-        OutputDebugString((std::to_wstring(++cnt) + L":子インデックス:" + std::to_wstring((int)wParam) + L"\n").c_str());
+        OutputDebugString((std::to_wstring(++cnt) + L":選択インデックス:" + std::to_wstring((int)wParam) + L"\n").c_str());
         //if ((int)wParam==-3|| (int)wParam == -4) {
         //return 0;
         //}
@@ -227,9 +227,6 @@ LRESULT CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
           ExcludeClipRect(hdc, 40, 3, windowWidth, 23);
           ExcludeClipRect(hdc, 3, windowHeight - 23, 20, windowHeight - 3);
           ExcludeClipRect(hdc, 40, windowHeight - 23, windowWidth, windowHeight - 3);
-        }
-        if (message == WM_PAINT) {
-          EndPaint(hWnd, &ps);
         }
 
         return DefSubclassProc(hWnd, message, wParam, lParam);
