@@ -7,6 +7,7 @@
 #include <string>
 #include <windows.h>
 #include <windowsx.h>
+#include <iostream>
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -346,7 +347,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         InitializeMenuItem(hSubMenu1, NULL, IDS_MENU_FILE_3, MFT_STRING | MFT_OWNERDRAW);
         InitializeMenuItem(hSubMenu1, NULL, IDS_MENU_FILE_4, MFT_STRING | MFT_OWNERDRAW);
         InitializeMenuItem(hSubMenu1, NULL, IDS_MENU_FILE_5, MFT_STRING | MFT_OWNERDRAW);
-        
+
         InitializeMenuItem(hSubMenu2, NULL, IDS_MENU_HELP_VERSION, MFT_STRING | MFT_OWNERDRAW);
         SetMenuDefaultItem(hSubMenu2, IDS_MENU_HELP_VERSION, 0);
         InitializeMenuItem(hSubMenu3, NULL, IDS_MENU_FILE_2, MFT_STRING | MFT_OWNERDRAW);
@@ -452,9 +453,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
           WCHAR text[MAX_LOADSTRING];
           ::LoadString(hInst, menuItem->itemID, text, MAX_LOADSTRING);
-          // ::SetTextAlign(hdc, TA_RIGHT);
+          ::SetTextAlign(hdc, TA_LEFT);
           ::ExtTextOut(hdc, itemRect.left + g_icon_vx + MENU_WIDTH_PLUS, itemRect.top + 2, ETO_OPAQUE, &itemRect, text, lstrlen(text), NULL);
+
+          /*int px = ::GetDeviceCaps(hdc, LOGPIXELSX);
+          int py = ::GetDeviceCaps(hdc, LOGPIXELSY);
+
+          LOGFONT logFont{};
+          logFont.lfHeight = -(int)(std::roundf(7.25L * py / 72));
+          logFont.lfWidth = 0;
+          logFont.lfEscapement = 0;
+          logFont.lfOrientation = 0;
+          logFont.lfWeight = FW_NORMAL;
+          logFont.lfItalic = false;
+          logFont.lfUnderline = false;
+          logFont.lfStrikeOut = false;
+          logFont.lfCharSet = DEFAULT_CHARSET;
+          logFont.lfOutPrecision = OUT_DEFAULT_PRECIS;
+          logFont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+          logFont.lfQuality = DEFAULT_QUALITY;
+          logFont.lfPitchAndFamily = (DEFAULT_PITCH | FF_MODERN);
+
+          //memset(this->lfFaceName, 0, sizeof(this->lfFaceName));
+          ::ZeroMemory(logFont.lfFaceName, sizeof(logFont.lfFaceName));
+          std::wstring fontName = L"Segoe MDL2 Assets";
+          fontName = fontName.substr(0, 31);
+          wcscpy_s(logFont.lfFaceName, LF_FACESIZE, fontName.c_str());
+          HFONT iconFont = CreateFontIndirect(&logFont);
+
+          ::SelectObject(hdc, iconFont);
+          wchar_t w = (wchar_t)0xE921;
+          //::ExtTextOut(hdc, itemRect.right, itemRect.top + 2, ETO_OPAQUE, &itemRect, &w, 1, NULL);
+          ::DrawText(hdc, &w, 1, &itemRect, DT_SINGLELINE | DT_RIGHT | DT_VCENTER);*/
+
           ::SelectObject(hdc, hFontOld);
+          //::DeleteObject(iconFont);
           ::DeleteObject(hFont);
         }
         break;
