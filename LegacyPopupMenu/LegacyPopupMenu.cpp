@@ -323,17 +323,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
   MENUITEMINFO mi;
 
   switch (message) {
-
-    case WM_NOTIFY:
-      {
-        LPNMHDR pnmh = (LPNMHDR)lParam;
-        if (pnmh->code == NM_CUSTOMDRAW) {
-          int a = 0;
-          a++;
-        }
-        return DefWindowProc(hWnd, message, wParam, lParam);
-      }
-
     case WM_RBUTTONUP:
       isPopUp = true;
       po.x = LOWORD(lParam);
