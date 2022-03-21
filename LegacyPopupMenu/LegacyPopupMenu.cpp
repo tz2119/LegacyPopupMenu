@@ -311,7 +311,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
   POINT po;
   static HMENU tmp, hmenuR, hmenuL;
   int wmId, wmEvent;
-  RECT rc;
   SIZE sz;
   HFONT hFont, hFontOld;
   static LOGFONT g_menufont;
@@ -347,7 +346,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         InitializeMenuItem(hSubMenu1, NULL, IDS_MENU_FILE_3, MFT_STRING | MFT_OWNERDRAW);
         InitializeMenuItem(hSubMenu1, NULL, IDS_MENU_FILE_4, MFT_STRING | MFT_OWNERDRAW);
         InitializeMenuItem(hSubMenu1, NULL, IDS_MENU_FILE_5, MFT_STRING | MFT_OWNERDRAW);
-
+        
         InitializeMenuItem(hSubMenu2, NULL, IDS_MENU_HELP_VERSION, MFT_STRING | MFT_OWNERDRAW);
         SetMenuDefaultItem(hSubMenu2, IDS_MENU_HELP_VERSION, 0);
         InitializeMenuItem(hSubMenu3, NULL, IDS_MENU_FILE_2, MFT_STRING | MFT_OWNERDRAW);
@@ -400,7 +399,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         HDC hdc = ::GetDC(hWnd);
         hFont = CreateFontIndirect(&g_menufont);
         hFontOld = (HFONT)SelectObject(hdc, hFont);
-        GetTextExtentPoint32(hdc, text, lstrlen(text), &sz);
+        ::GetTextExtentPoint32(hdc, text, lstrlen(text), &sz);
         lpMI->itemWidth = sz.cx + g_icon_vx + MENU_WIDTH_PLUS + 50;
         lpMI->itemHeight = sz.cy + 5;
         height += 5;
@@ -418,7 +417,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
           menuInfo.fMask = MIIM_TYPE | MIIM_CHECKMARKS | MIIM_DATA | MIIM_ID | MIIM_STATE | MIIM_SUBMENU;
           GetMenuItemInfo((HMENU)menuItem->hwndItem, menuItem->itemID, FALSE, &menuInfo);
 
-          rc = menuItem->rcItem;
+          RECT itemRect = menuItem->rcItem;
           HDC hdc = menuItem->hDC;
 
           RECT windowRect;
@@ -428,16 +427,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
           hBrush = CreateSolidBrush(RGB(33, 33, 33));
           if (menuItem->itemID == 0) {
-            FillRect(hdc, &rc, CreateSolidBrush(RGB(33, 33, 33)));
-            rc.bottom = rc.top + 1;
-            FillRect(hdc, &rc, CreateSolidBrush(RGB(255, 0, 0)));
+            FillRect(hdc, &itemRect, CreateSolidBrush(RGB(33, 33, 33)));
+            itemRect.bottom = itemRect.top + 1;
+            FillRect(hdc, &itemRect, CreateSolidBrush(RGB(255, 0, 0)));
             return 0;
           }
 
           hFont = CreateFontIndirect(&g_menufont);
           hFontOld = (HFONT)SelectObject(hdc, hFont);
 
-          FillRect(hdc, &rc, CreateSolidBrush(RGB(33, 33, 33)));
+          FillRect(hdc, &itemRect, CreateSolidBrush(RGB(33, 33, 33)));
           if (menuItem->itemState & ODS_SELECTED) {
             hBrush = CreateSolidBrush(g_menu_backcolor);
             SetTextColor(hdc, g_menu_textcolor);
@@ -447,15 +446,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
             SetBkColor(hdc, RGB(33, 33, 33));
             hBrush = CreateSolidBrush(RGB(33, 33, 33));
           }
-          FillRect(hdc, &rc, hBrush);
-          DeleteObject(hBrush);
+          ::FillRect(hdc, &itemRect, hBrush);
+          ::DeleteObject(hBrush);
           //DrawIconEx(hdc, rc.left, rc.top + 1, hIcon, g_icon_vx, g_icon_vy, 0,	NULL, DI_IMAGE | DI_MASK);
 
           WCHAR text[MAX_LOADSTRING];
-          LoadString(hInst, menuItem->itemID, text, MAX_LOADSTRING);
-          ExtTextOut(hdc, rc.left + g_icon_vx + MENU_WIDTH_PLUS, rc.top + 2, ETO_OPAQUE, NULL, text, lstrlen(text), NULL);
-          SelectObject(hdc, hFontOld);
-          DeleteObject(hFont);
+          ::LoadString(hInst, menuItem->itemID, text, MAX_LOADSTRING);
+          // ::SetTextAlign(hdc, TA_RIGHT);
+          ::ExtTextOut(hdc, itemRect.left + g_icon_vx + MENU_WIDTH_PLUS, itemRect.top + 2, ETO_OPAQUE, &itemRect, text, lstrlen(text), NULL);
+          ::SelectObject(hdc, hFontOld);
+          ::DeleteObject(hFont);
         }
         break;
       }
